@@ -1,0 +1,59 @@
+#!/bin/bash
+
+PID_FILE=/tmp/wildflyswarm.pid
+
+# restore maven dependencies downloaded in a previous build,
+# so they do not have to be downloaded again.
+# /opt/s2i/destination/artifacts will only be present in the incremental build scenario
+# in which the target image name is an existing docker image which contains
+# dependencies from a prior build execution.
+function restore_saved_artifacts() {
+  if [ "$(ls /opt/s2i/destination/artifacts/ 2>/dev/null)" ]; then
+    echo -n "Restoring saved artifacts from prior build..."
+    mv /opt/s2i/destination/artifacts/* $HOME/.
+  fi
+}
+
+# Source code provided to S2I is at ${HOME}
+LOCAL_SOURCE_DIR=${HOME}
+mkdir -p $LOCAL_SOURCE_DIR
+
+# Copy the source for compilation
+cp -Rf /opt/s2i/destination/src/. $LOCAL_SOURCE_DIR
+chgrp -R 0 $LOCAL_SOURCE_DIR
+chmod -R g+rw $LOCAL_SOURCE_DIR
+
+# If a pom.xml is present, this is a normal build scenario
+# so run maven.
+if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
+  # restore any maven dependencies which will be present if this is an
+  # incremental build
+  restore_saved_artifacts
+
+  pushd $LOCAL_SOURCE_DIR &> /dev/null
+  JAVA_HOME=/etc/alternatives/java_sdk_1.7.0
+
+  if [ -z "$MAVEN_ARGS" ]; then
+    export MAVEN_ARGS="package -Popenshift -DskipTests"
+  fi
+  if [ -z "$MAVEN_ARGS_APPEND" ]; then
+    export MAVEN_ARGS="$MAVEN_ARGS $MAVEN_ARGS_APPEND"
+  fi
+  echo "Found pom.xml... attempting to build with 'mvn ${MAVEN_ARGS}'"
+
+  mvn --version
+  mvn $MAVEN_ARGS
+
+  ERR=$?
+  if [ $ERR -ne 0 ]; then
+    echo "Aborting due to error code $ERR from mvn package"
+    exit $ERR
+  fi
+
+  popd &> /dev/null
+else
+  echo "Oops - only maven builds are supported for now."
+  exit 1
+fi
+
+echo "...done"
