@@ -1,2 +1,5 @@
 #!/bin/bash
+
+LOCAL_SOURCE_DIR=${HOME}
+
 exec java -Djboss.bind.address=0.0.0.0 -jar $LOCAL_SOURCE_DIR/target/*-swarm.jar
