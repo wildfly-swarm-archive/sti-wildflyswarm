@@ -16,7 +16,7 @@
     "source" : {
       "type" : "Git",
       "git" : {
-        "uri": "git://github.com/wildfly-swarm/wildflyswarm-10-centos.git"
+        "uri": "git://github.com/wildfly-swarm/sti-wildflyswarm.git"
       }
     },
     "strategy": {
