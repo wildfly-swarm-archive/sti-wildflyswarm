@@ -1,24 +1,18 @@
 {
   "kind": "BuildConfig",
-  "apiVersion": "v1beta3",
+  "apiVersion": "v1",
   "metadata":{
-    "name": "wildflyswarm-10-centos-build"
+    "name": "wildflyswarm-10-centos7-build"
   },
-  "triggers": [
-    {
-      "type": "github",
-      "github": {
-        "secret": "secret101"
+  "spec": {
+    "triggers": [
+      {
+        "type": "GitHub",
+        "github": {
+          "secret": "secret101"
+        }
       }
-    },
-    {
-      "type": "generic",
-      "generic": {
-        "secret": "secret101"
-      }
-    }
-  ],
-  "parameters": {
+    ],
     "source" : {
       "type" : "Git",
       "git" : {
@@ -28,15 +22,24 @@
     "strategy": {
       "type": "Custom",
       "customStrategy": {
-        "image": "openshift/sti-image-builder",
+        "from": {
+          "kind": "DockerImage",
+          "name": "openshift/sti-image-builder"
+        },
         "exposeDockerSocket": true,
         "env": [
-          { "name": "IMAGE_NAME", "value": "openshift/wildflyswarm-10-centos-candidate"}
+          {
+            "name": "IMAGE_NAME",
+            "value": "openshift/wildflyswarm-10-centos7"
+          }
         ]
       }
+    },
+    "output": {
+      "to": {
+        "kind": "ImageStreamTag",
+        "name": "wildflyswarm-10-centos7:latest"
+      }
     }
-  },
-  "labels": {
-    "name": "wildflyswarm-10-centos-build"
   }
 }
