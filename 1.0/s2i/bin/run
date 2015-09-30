@@ -2,4 +2,8 @@
 
 LOCAL_SOURCE_DIR=${HOME}
 
-exec java -Djboss.bind.address=0.0.0.0 -jar $LOCAL_SOURCE_DIR/target/*-swarm.jar
+if [ -z "$SWARM_JAR" ]; then
+  SWARM_JAR="target/*-swarm.jar"
+fi
+
+exec java -Djboss.bind.address=0.0.0.0 -jar $LOCAL_SOURCE_DIR/$SWARM_JAR
