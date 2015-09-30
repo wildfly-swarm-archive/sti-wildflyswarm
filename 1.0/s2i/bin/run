@@ -6,4 +6,6 @@ if [ -z "$SWARM_JAR" ]; then
   SWARM_JAR="target/*-swarm.jar"
 fi
 
-exec java -Djboss.bind.address=0.0.0.0 -jar $LOCAL_SOURCE_DIR/$SWARM_JAR
+BIND_IP=`ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/'`
+
+exec java -Djboss.bind.address=$BIND_IP -jar $LOCAL_SOURCE_DIR/$SWARM_JAR
