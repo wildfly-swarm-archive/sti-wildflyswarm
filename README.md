@@ -62,9 +62,10 @@ with `oc status`. After it finishes:
 $ oc new-app wildflyswarm-10-centos7~https://github.com/bbrowning/openshift-jee-sample
 ```
 
-Visit your app's service host/port (given by `oc status`) to see the
-sample app. The path `/snoop.jsp` will also test a JSP page and output
-some server information.
+Wait for the build and deployment to complete and then visit your
+app's service host/port (given by `oc status`) to see the sample
+app. The path `/snoop.jsp` will also test a JSP page and output some
+server information.
 
 Test
 ---------------------
