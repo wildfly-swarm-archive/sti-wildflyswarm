@@ -26,7 +26,7 @@ $ cd sti-wildflyswarm
 $ make build
 ```
 
-Usage
+Standalone Usage
 ---------------------
 To build a simple [jee application](https://github.com/bparees/openshift-jee-sample)
 using standalone [S2I](https://github.com/openshift/source-to-image) and then run the
@@ -41,6 +41,23 @@ $ docker run -p 8080:8080 wildflyswarmtest
 ```
 $ curl 127.0.0.1:8080
 ```
+
+OpenShift 3 Usage
+---------------------
+
+First ensure you have a [working OpenShift 3
+environment](http://www.openshift.org/) with the `oc` command in your
+path.
+
+```
+$ oc create -f https://raw.githubusercontent.com/wildfly-swarm/sti-wildflyswarm/master/1.0/template.json
+$ oc start-build wildflyswarm-10-centos7-build
+$ oc new-app wildflyswarm-10-centos7~https://github.com/bbrowning/openshift-jee-sample
+```
+
+Visit your app's service host/port (given by `oc status`) to see the
+sample app. The path `/snoop.jsp` will also test a JSP page and output
+some server information.
 
 Test
 ---------------------
