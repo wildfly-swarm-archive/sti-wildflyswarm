@@ -50,7 +50,8 @@ environment](http://www.openshift.org/) with the `oc` command in your
 path.
 
 ```
-$ oc create -f https://raw.githubusercontent.com/wildfly-swarm/sti-wildflyswarm/master/1.0/template.json
+$ oc create -f https://raw.githubusercontent.com/wildfly-swarm/sti-wildflyswarm/master/1.0/test/imagestream.json
+$ oc create -f https://raw.githubusercontent.com/wildfly-swarm/sti-wildflyswarm/master/1.0/test/build-config.json
 $ oc start-build wildflyswarm-10-centos7-build
 $ oc new-app wildflyswarm-10-centos7~https://github.com/bbrowning/openshift-jee-sample
 ```
