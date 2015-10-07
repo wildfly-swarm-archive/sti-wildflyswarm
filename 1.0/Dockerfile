@@ -27,11 +27,11 @@ RUN yum install -y --enablerepo=centosplus \
     mkdir -p /opt/s2i/destination
 
 # Copy the S2I scripts from the specific language image to /usr/local/sti
-COPY ./s2i/bin/ /usr/local/sti
+COPY ./s2i/bin/ $STI_SCRIPTS_PATH
 
 # Create wildfly swarm group and user, set file ownership to that user.
 RUN chmod -R go+rw /opt/s2i/destination
 
 USER 1001
 
-CMD ["usage"]
+CMD $STI_SCRIPTS_PATH/usage
