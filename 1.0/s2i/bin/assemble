@@ -32,6 +32,10 @@ if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
   fi
 
   popd &> /dev/null
+
+  # Blow away our maven repository so we don't bloat the resulting
+  # image with all our build dependencies
+  rm -rf ~/.m2/repository
 else
   echo "Oops - only maven builds are supported for now."
   exit 1
