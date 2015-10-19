@@ -8,7 +8,7 @@ mkdir -p $LOCAL_SOURCE_DIR
 echo "Installing latest WildFly Swarm from git"
 SWARM_DIR=${LOCAL_SOURCE_DIR}/tmp_swarm
 OLD_MAVEN_OPTS=${MAVEN_OPTS}
-export MAVEN_OPTS="-Xmx512m"
+export MAVEN_OPTS="-Xmx768m"
 mkdir -p $SWARM_DIR
 pushd $SWARM_DIR &> /dev/null
 git clone https://github.com/wildfly-swarm/wildfly-swarm.git .
