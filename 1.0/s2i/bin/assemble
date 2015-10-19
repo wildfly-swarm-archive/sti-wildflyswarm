@@ -5,13 +5,17 @@ LOCAL_SOURCE_DIR=${HOME}
 mkdir -p $LOCAL_SOURCE_DIR
 
 # Make sure we have the latest swarm built
+echo "Installing latest WildFly Swarm from git"
 SWARM_DIR=${LOCAL_SOURCE_DIR}/tmp_swarm
+OLD_MAVEN_OPTS=${MAVEN_OPTS}
+export MAVEN_OPTS="-Xmx512m"
 mkdir -p $SWARM_DIR
 pushd $SWARM_DIR &> /dev/null
 git clone https://github.com/wildfly-swarm/wildfly-swarm.git .
 mvn install -Dmaven.test.skip
 popd &> /dev/null
 rm -rf $SWARM_DIR
+export MAVEN_OPTS=${OLD_MAVEN_OPTS}
 
 # Copy the source for compilation
 cp -Rf /opt/s2i/destination/src/. $LOCAL_SOURCE_DIR
