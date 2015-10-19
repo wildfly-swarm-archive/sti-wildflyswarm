@@ -4,6 +4,15 @@
 LOCAL_SOURCE_DIR=${HOME}
 mkdir -p $LOCAL_SOURCE_DIR
 
+# Make sure we have the latest swarm built
+SWARM_DIR=${LOCAL_SOURCE_DIR}/tmp_swarm
+mkdir -p $SWARM_DIR
+pushd $SWARM_DIR &> /dev/null
+git clone https://github.com/wildfly-swarm/wildfly-swarm.git .
+mvn install -Dmaven.test.skip
+popd &> /dev/null
+rm -rf $SWARM_DIR
+
 # Copy the source for compilation
 cp -Rf /opt/s2i/destination/src/. $LOCAL_SOURCE_DIR
 chgrp -R 0 $LOCAL_SOURCE_DIR
