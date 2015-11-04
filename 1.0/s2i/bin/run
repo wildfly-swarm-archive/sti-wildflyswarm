@@ -8,4 +8,6 @@ fi
 
 BIND_IP=`ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/'`
 
+export OPENSHIFT_KUBE_PING_NAMESPACE=$OPENSHIFT_BUILD_NAMESPACE
+
 exec java -Djboss.bind.address=$BIND_IP -Djboss.http.port=8080 -Djboss.socket.binding.port-offset=0 -Djava.net.preferIPv4Stack=true -jar $LOCAL_SOURCE_DIR/$SWARM_JAR
