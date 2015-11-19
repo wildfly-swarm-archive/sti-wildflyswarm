@@ -6,13 +6,13 @@ FROM openshift/base-centos7
 
 MAINTAINER Ben Browning <bbrownin@redhat.com>
 
-EXPOSE 8080
+EXPOSE 8080 8888
 
 ENV MAVEN_VERSION 3.3.3
 
 LABEL io.k8s.description="Platform for building and running JEE applications on WildFly Swarm" \
       io.k8s.display-name="WildFly Swarm" \
-      io.openshift.expose-services="8080:http" \
+      io.openshift.expose-services="8080:http,8888:ping" \
       io.openshift.tags="builder,wildflyswarm" \
       io.openshift.s2i.destination="/opt/s2i/destination"
 
