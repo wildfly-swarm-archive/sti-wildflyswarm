@@ -15,6 +15,7 @@ handlers = java.util.logging.ConsoleHandler
 .level = WARNING
 java.util.logging.ConsoleHandler.level = FINEST
 org.jgroups = FINEST
+org.openshift = FINEST
 EOF
 
 exec java -Djava.util.logging.config.file=$LOCAL_SOURCE_DIR/logging.properties -Djboss.bind.address=$BIND_IP -Djboss.http.port=8080 -Djboss.socket.binding.port-offset=0 -Djava.net.preferIPv4Stack=true -jar $LOCAL_SOURCE_DIR/$SWARM_JAR
