@@ -19,6 +19,6 @@ fi
 
 export OPENSHIFT_KUBE_PING_NAMESPACE=$OPENSHIFT_BUILD_NAMESPACE
 
-exec java -Djboss.bind.address=$BIND_IP -Djboss.http.port=8080 \
-     -Djboss.socket.binding.port-offset=0 -Djava.net.preferIPv4Stack=true \
+exec java -Dswarm.bind.address=$BIND_IP -Dswarm.http.port=8080 \
+     -Dswarm.port-offset=0 -Djava.net.preferIPv4Stack=true \
      $SWARM_JVM_ARGS -jar $LOCAL_SOURCE_DIR/$SWARM_JAR $SWARM_JAR_ARGS
