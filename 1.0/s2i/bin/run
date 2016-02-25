@@ -6,16 +6,7 @@ if [ -z "$SWARM_JAR" ]; then
   SWARM_JAR="target/*-swarm.jar"
 fi
 
-BIND_IP=`ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/'`
-
-if [ -z "$BIND_IP" ]; then
-  echo "Bind IP Address not found in interfaces:"
-  echo ""
-  echo "`ip addr`"
-  echo ""
-  echo "Attempting to fallback to eth0"
-  BIND_IP=`ip addr | grep 'eth0:' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/'`
-fi
+BIND_IP=`hostname -i`
 
 export OPENSHIFT_KUBE_PING_NAMESPACE=$OPENSHIFT_BUILD_NAMESPACE
 
