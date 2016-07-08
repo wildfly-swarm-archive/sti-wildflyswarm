@@ -20,7 +20,7 @@ LABEL io.k8s.description="Platform for building and running JEE applications on 
 RUN yum install -y --enablerepo=centosplus \
     tar unzip bc which lsof java-1.8.0-openjdk java-1.8.0-openjdk-devel && \
     yum clean all -y && \
-    (curl -0 http://www.us.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz | \
+    (curl -0 https://archive.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz | \
     tar -zx -C /usr/local) && \
     ln -sf /usr/local/apache-maven-$MAVEN_VERSION/bin/mvn /usr/local/bin/mvn && \
     mkdir -p /opt/app-root/source && \
