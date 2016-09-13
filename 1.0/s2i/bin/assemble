@@ -22,6 +22,10 @@ if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
   fi
   echo "Found pom.xml... attempting to build with 'mvn ${MAVEN_ARGS}'"
 
+  if [ -f "$LOCAL_SOURCE_DIR/configuration/settings.xml" ]; then
+    export MAVEN_ARGS="$MAVEN_ARGS -s $LOCAL_SOURCE_DIR/configuration/settings.xml"
+  fi
+
   mvn --version
   mvn $MAVEN_ARGS
 
