@@ -34,7 +34,9 @@ COPY ./s2i/bin/ $STI_SCRIPTS_PATH
 ADD ./contrib/settings.xml $HOME/.m2/
 
 # Create wildfly swarm group and user, set file ownership to that user.
-RUN chmod -R go+rw /opt/s2i/destination $HOME/.m2
+RUN chown -R 1001:0 $HOME && \
+    chmod -R ug+rw $HOME && \
+    chmod -R g+rw /opt/s2i/destination
 
 USER 1001
 
