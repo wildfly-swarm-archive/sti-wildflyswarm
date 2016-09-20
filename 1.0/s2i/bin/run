@@ -4,10 +4,12 @@ LOCAL_SOURCE_DIR=${HOME}
 
 if [ -z "$SWARM_JAR" ]; then
   SWARM_JAR="`find $LOCAL_SOURCE_DIR -name *-swarm.jar`"
+else
+  SWARM_JAR="`$LOCAL_SOURCE_DIR/$SWARM_JAR`"
 fi
 
 export OPENSHIFT_KUBE_PING_NAMESPACE=$OPENSHIFT_BUILD_NAMESPACE
 
 exec java -Dswarm.bind.address=0.0.0.0 -Dswarm.http.port=8080 \
      -Dswarm.port.offset=0 -Djava.net.preferIPv4Stack=true \
-     $SWARM_JVM_ARGS -jar $LOCAL_SOURCE_DIR/$SWARM_JAR $SWARM_JAR_ARGS
+     $SWARM_JVM_ARGS -jar $SWARM_JAR $SWARM_JAR_ARGS
