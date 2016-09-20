@@ -3,7 +3,7 @@
 LOCAL_SOURCE_DIR=${HOME}
 
 if [ -z "$SWARM_JAR" ]; then
-  SWARM_JAR="target/*-swarm.jar"
+  SWARM_JAR="`find $LOCAL_SOURCE_DIR -name *-swarm.jar`"
 fi
 
 export OPENSHIFT_KUBE_PING_NAMESPACE=$OPENSHIFT_BUILD_NAMESPACE
