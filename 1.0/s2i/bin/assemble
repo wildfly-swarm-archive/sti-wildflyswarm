@@ -1,5 +1,17 @@
 #!/bin/bash
 
+# restore maven dependencies downloaded in a previous build,
+# so they do not have to be downloaded again.
+# /opt/s2i/destination/artifacts will only be present in the incremental build scenario
+# in which the target image name is an existing docker image which contains
+# dependencies from a prior build execution.
+function restore_saved_artifacts() {
+  if [ "$(ls -A /opt/s2i/destination/artifacts/ 2>/dev/null)" ]; then
+    echo -n "Restoring saved artifacts from prior build..."
+    mv /opt/s2i/destination/artifacts/.m2 $HOME/.m2
+  fi
+}
+
 # Source code provided to S2I is at ${HOME}
 LOCAL_SOURCE_DIR=${HOME}
 mkdir -p $LOCAL_SOURCE_DIR
@@ -12,6 +24,10 @@ chmod -R g+rw $LOCAL_SOURCE_DIR
 # If a pom.xml is present, this is a normal build scenario
 # so run maven.
 if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
+  # restore any maven dependencies which will be present if this is an
+  # incremental build
+  restore_saved_artifacts
+
   pushd $LOCAL_SOURCE_DIR &> /dev/null
 
   if [ -z "$MAVEN_ARGS" ]; then
@@ -33,9 +49,6 @@ if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
 
   popd &> /dev/null
 
-  # Blow away our maven repository so we don't bloat the resulting
-  # image with all our build dependencies
-  rm -rf ~/.m2/repository
 else
   echo "Oops - only maven builds are supported for now."
   exit 1
