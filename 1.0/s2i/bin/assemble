@@ -1,5 +1,40 @@
 #!/bin/bash
 
+function configure_proxy() {
+  if [ -n "$HTTP_PROXY_HOST" -a -n "$HTTP_PROXY_PORT" ]; then
+    xml="<proxy>\
+         <id>genproxy</id>\
+         <active>true</active>\
+         <protocol>http</protocol>\
+         <host>$HTTP_PROXY_HOST</host>\
+         <port>$HTTP_PROXY_PORT</port>"
+    if [ -n "$HTTP_PROXY_USERNAME" -a -n "$HTTP_PROXY_PASSWORD" ]; then
+      xml="$xml\
+         <username>$HTTP_PROXY_USERNAME</username>\
+         <password>$HTTP_PROXY_PASSWORD</password>"
+    fi
+    if [ -n "$HTTP_PROXY_NONPROXYHOSTS" ]; then
+      xml="$xml\
+         <nonProxyHosts>$HTTP_PROXY_NONPROXYHOSTS</nonProxyHosts>"
+    fi
+  xml="$xml\
+       </proxy>"
+    sed -i "s|<!-- ### configured http proxy ### -->|$xml|" $HOME/.m2/settings.xml
+  fi
+}
+
+# insert settings for mirrors/repository managers into settings.xml if supplied
+function configure_mirrors() {
+  if [ -n "$MAVEN_MIRROR_URL" ]; then
+    xml="<mirror>\
+      <id>mirror.default</id>\
+      <url>$MAVEN_MIRROR_URL</url>\
+      <mirrorOf>external:*</mirrorOf>\
+    </mirror>"
+    sed -i "s|<!-- ### configured mirrors ### -->|$xml|" $HOME/.m2/settings.xml
+  fi
+}
+
 # restore maven dependencies downloaded in a previous build,
 # so they do not have to be downloaded again.
 # /opt/s2i/destination/artifacts will only be present in the incremental build scenario
@@ -21,6 +56,20 @@ cp -Rf /opt/s2i/destination/src/. $LOCAL_SOURCE_DIR
 chgrp -R 0 $LOCAL_SOURCE_DIR
 chmod -R g+rw $LOCAL_SOURCE_DIR
 
+if [ -d $LOCAL_SOURCE_DIR/configuration ]; then
+  echo "Copying config files from project..."
+
+  if [ -f $LOCAL_SOURCE_DIR/configuration/settings.xml ]; then
+    mkdir -p $HOME/.m2
+    mv $LOCAL_SOURCE_DIR/configuration/settings.xml $HOME/.m2
+  fi
+
+  cp -v $LOCAL_SOURCE_DIR/configuration/* $JBOSS_HOME/standalone/configuration/
+fi
+
+configure_proxy
+configure_mirrors
+
 # If a pom.xml is present, this is a normal build scenario
 # so run maven.
 if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
@@ -33,10 +82,25 @@ if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
   if [ -z "$MAVEN_ARGS" ]; then
     export MAVEN_ARGS="-U install -Popenshift -DskipTests"
   fi
-  if [ -z "$MAVEN_ARGS_APPEND" ]; then
+  if [ ! -z "$MAVEN_ARGS_APPEND" ]; then
     export MAVEN_ARGS="$MAVEN_ARGS $MAVEN_ARGS_APPEND"
   fi
   echo "Found pom.xml... attempting to build with 'mvn ${MAVEN_ARGS}'"
+
+  # If MAVEN_SETTINGS specified will always add to MAVEN_ARGS
+  # Can be relative to application root
+  # Can be global to image
+  if [ -z "$MAVEN_SETTINGS" ]; then
+    export MAVEN_ARGS="$MAVEN_ARGS -s $HOME/.m2/settings.xml"
+  else
+    if [[ "$MAVEN_SETTINGS" = /* ]]; then
+       [ ! -e "$MAVEN_SETTINGS" ] && echo "Specified settings file does not exist in the image. [$MAVEN_SETTINGS]" && exit 1
+       export MAVEN_ARGS="$MAVEN_ARGS -s $MAVEN_SETTINGS"
+    else
+       [ ! -e "$LOCAL_SOURCE_DIR/$MAVEN_SETTINGS" ] && echo "Specified settings file does not exist in your source code. [$MAVEN_SETTINGS]" && exit 1
+       export MAVEN_ARGS="$MAVEN_ARGS -s $LOCAL_SOURCE_DIR/$MAVEN_SETTINGS"
+    fi
+  fi
 
   mvn --version
   mvn $MAVEN_ARGS

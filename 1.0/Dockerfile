@@ -24,13 +24,19 @@ RUN yum install -y --enablerepo=centosplus \
     tar -zx -C /usr/local) && \
     ln -sf /usr/local/apache-maven-$MAVEN_VERSION/bin/mvn /usr/local/bin/mvn && \
     mkdir -p /opt/app-root/source && \
-    mkdir -p /opt/s2i/destination
+    mkdir -p /opt/s2i/destination && \
+    mkdir -p $HOME/.m2
 
 # Copy the S2I scripts from the specific language image to /usr/local/sti
 COPY ./s2i/bin/ $STI_SCRIPTS_PATH
 
+# Copy basic Maven settings
+ADD ./contrib/settings.xml $HOME/.m2/
+
 # Create wildfly swarm group and user, set file ownership to that user.
-RUN chmod -R go+rw /opt/s2i/destination
+RUN chown -R 1001:0 $HOME && \
+    chmod -R ug+rw $HOME && \
+    chmod -R g+rw /opt/s2i/destination
 
 USER 1001
 
